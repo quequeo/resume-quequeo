@@ -1,17 +1,24 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../utils/Api";
 import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     password_confirmation: "",
   });
 
-  const { login } = useContext(AuthContext); // Accede al contexto de autenticación
-  const navigate = useNavigate();
+  const { login, user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,8 +28,8 @@ const Register = () => {
     e.preventDefault();
     try {
       const response = await registerUser(formData);
-      login(response.user, response.token); // Loguea automáticamente al usuario
-      navigate("/dashboard"); // Redirige al Dashboard
+      login(response.user, response.token);
+      navigate("/dashboard");
     } catch (error: any) {
       alert(error.message);
     }

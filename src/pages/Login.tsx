@@ -22,12 +22,16 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await loginUser(credentials);
-      login(response.user, response.token);
-      navigate("/");
+      if (response.user && response.token) {
+        login(response.user, response.token);
+        navigate("/dashboard");
+      } else {
+        setError("Invalid user or token data");
+      }
     } catch (error: any) {
       setError(error.message);
     }
-  };
+  };  
 
   return (
     <div className="container mt-5">
