@@ -66,6 +66,45 @@ export const loginUser = async (credentials: Credentials): Promise<AuthResponse>
 };
 
 
+// Resume API functions
+interface Resume {
+  id?: number;
+  title: string;
+  style: string;
+  content: string;
+}
+// Fetch all resumes
+export const fetchResumes = async (): Promise<any[]> => {
+  const response = await fetch(`${API_URL}/resumes`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
 
+// Save a new resume
+export const saveResume = async (data: Resume): Promise<any> => {
+  const response = await fetch(`${API_URL}/resumes`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return handleResponse(response);
+};
 
+// Delete a resume
+export const deleteResume = async (id: number): Promise<void> => {
+  const response = await fetch(`${API_URL}/resumes/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  await handleResponse(response);
+};
 
+export const fetchStyles = async (): Promise<string[]> => {
+  const response = await fetch(`${API_URL}/resumes/styles`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};

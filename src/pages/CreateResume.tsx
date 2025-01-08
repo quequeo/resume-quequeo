@@ -1,23 +1,36 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { saveResume } from "../utils/Api";
 
 const CreateResume = () => {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState({});
+  const [content, setContent] = useState("");
+  const [style, setStyle] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSave = () => {
-    const newResume = { id: Date.now(), title, content };
-    const resumes = JSON.parse(localStorage.getItem("resumes") || "[]");
-    resumes.push(newResume);
-    localStorage.setItem("resumes", JSON.stringify(resumes));
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const styleParam = queryParams.get("style");
+    if (styleParam) {
+      setStyle(styleParam);
+    }
+  }, [location.search]);
 
-    navigate("/");
+  const handleSave = async () => {
+    try {
+      await saveResume({ title, content, style });
+      navigate("/");
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      alert("Failed to save resume. Please try again.");
+    }
   };
 
   return (
     <div className="container mt-5">
       <h1>Create Your Resume</h1>
+      <p>Style: {style}</p>
       <div className="form-group">
         <label htmlFor="title">Resume Title</label>
         <input
@@ -36,8 +49,8 @@ const CreateResume = () => {
           className="form-control"
           id="content"
           rows={8}
-          value={content.body || ""}
-          onChange={(e) => setContent({ ...content, body: e.target.value })}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
           placeholder="Add your resume details"
         ></textarea>
       </div>

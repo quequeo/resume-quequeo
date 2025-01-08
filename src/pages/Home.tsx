@@ -1,14 +1,49 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { fetchStyles, fetchResumes, deleteResume } from "../utils/Api";
+
+interface Resume {
+  id: number;
+  title: string;
+  style: string;
+}
 
 const Home = () => {
-  const [resumes, setResumes] = useState([
-    { id: 1, title: "Modern Resume", url: "#" },
-    { id: 2, title: "Classic Resume", url: "#" },
-    { id: 3, title: "Creative Resume", url: "#" },
-  ]);
+  const [styles, setStyles] = useState<string[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([]);
 
-  const [createdResumes, setCreatedResumes] = useState([]);
+  useEffect(() => {
+    const loadStyles = async () => {
+      try {
+        const data = await fetchStyles();
+        setStyles(data);
+      } catch (error) {
+        console.error("Error fetching styles:", error);
+      }
+    };
+
+    const loadResumes = async () => {
+      try {
+        const data = await fetchResumes();
+        setResumes(data);
+      } catch (error) {
+        console.error("Error fetching resumes:", error);
+      }
+    };
+
+    loadStyles();
+    loadResumes();
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteResume(id);
+      setResumes((prev) => prev.filter((resume) => resume.id !== id));
+    } catch (error) {
+      console.error("Error deleting resume:", error);
+      alert("Failed to delete the resume. Please try again.");
+    }
+  };
 
   return (
     <div className="container text-center mt-5">
@@ -16,12 +51,15 @@ const Home = () => {
       <p>Create your professional CV with the power of AI.</p>
 
       <div className="row mt-4">
-        {resumes.map((resume) => (
-          <div className="col-md-4 mb-4" key={resume.id}>
+        {styles.map((style, index) => (
+          <div className="col-md-4 mb-4" key={index}>
             <div className="card p-3">
-              <h5 className="card-title">{resume.title}</h5>
+              <h5 className="card-title">{style.charAt(0).toUpperCase() + style.slice(1)} Resume</h5>
               <button className="btn btn-primary">
-                <Link to="/create-resume" style={{ color: "#fff" }}>
+                <Link
+                  to={`/create-resume?style=${style}`}
+                  style={{ color: "#fff" }}
+                >
                   + Create Resume
                 </Link>
               </button>
@@ -32,12 +70,16 @@ const Home = () => {
 
       <h2>Your Resumes</h2>
       <ul className="list-group mt-3">
-        {createdResumes.map((resume) => (
+        {resumes.map((resume) => (
           <li key={resume.id} className="list-group-item d-flex justify-content-between align-items-center">
-            {resume.title}
+            {resume.title} ({resume.style})
             <div>
-              <button className="btn btn-success">Share</button>
-              <button className="btn btn-secondary ms-2">Download</button>
+              <button
+                className="btn btn-danger"
+                onClick={() => handleDelete(resume.id)}
+              >
+                Delete
+              </button>
             </div>
           </li>
         ))}
