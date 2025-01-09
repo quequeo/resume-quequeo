@@ -19,28 +19,13 @@ function App() {
           <Navbar />
           <main className="flex-grow-1">
             <Routes>
-              <Route path="/" element={<Home />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
 
               {/* Protected routes: Begin */}
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute>
-                    <Profile />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                }
-              />
+              <Route path="/"            element={<PrivateRoute><Home /></PrivateRoute>} />
+              <Route path="/profile"     element={<PrivateRoute><Profile /></PrivateRoute>} />
+              <Route path="/dashboard"   element={<PrivateRoute><Dashboard /></PrivateRoute>} />
               {/* Protected routes: End */}
 
               {/* Route 404 */}
