@@ -8,7 +8,6 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-import CreateResume from "./pages/CreateResume";
 
 import { AuthProvider } from "./context/AuthContext";
 
@@ -39,15 +38,6 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Dashboard />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path="/create-resume"
-                element={
-                  <PrivateRoute>
-                    <CreateResume />
                   </PrivateRoute>
                 }
               />

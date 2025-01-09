@@ -8,6 +8,8 @@ if (!API_BASE_URL) {
   throw new Error("API_BASE_URL is not defined in the environment variables.");
 }
 
+import { Resume } from "../types/interfaces";
+
 const handleResponse = async (response: Response): Promise<any> => {
   if (!response.ok) {
     const errorData = await response.json();
@@ -67,14 +69,9 @@ export const loginUser = async (credentials: Credentials): Promise<AuthResponse>
 
 
 // Resume API functions
-interface Resume {
-  id?: number;
-  title: string;
-  style: string;
-  content: string;
-}
+
 // Fetch all resumes
-export const fetchResumes = async (): Promise<any[]> => {
+export const fetchResumes = async (): Promise<Resume[]> => {
   const response = await fetch(`${API_URL}/resumes`, {
     method: "GET",
     headers: getAuthHeaders(),
@@ -82,12 +79,12 @@ export const fetchResumes = async (): Promise<any[]> => {
   return handleResponse(response);
 };
 
-// Save a new resume
-export const saveResume = async (data: Resume): Promise<any> => {
-  const response = await fetch(`${API_URL}/resumes`, {
-    method: "POST",
+// Save a new resume or update an existing one
+export const saveResume = async (resume: Resume): Promise<Resume> => {
+  const response = await fetch(`${API_URL}/resumes/${resume.id || ""}`, {
+    method: resume.id ? "PUT" : "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify(data),
+    body: JSON.stringify(resume),
   });
   return handleResponse(response);
 };
@@ -101,8 +98,18 @@ export const deleteResume = async (id: number): Promise<void> => {
   await handleResponse(response);
 };
 
+// Fetch all styles
 export const fetchStyles = async (): Promise<string[]> => {
   const response = await fetch(`${API_URL}/resumes/styles`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+// Fetch a single resume by id
+export const fetchResume = async (id: number): Promise<Resume> => {
+  const response = await fetch(`${API_URL}/resumes/${id}`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
