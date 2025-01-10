@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchStyles, fetchResumes, saveResume, deleteResume } from "../utils/Api";
+import { fetchStyles, fetchResumes, saveResume, deleteResume  } from "../utils/Api";
 import { Resume } from "../types/interfaces";
 import Spinner from "../components/Spinner";
+import API_URL from "../utils/Api";
 
 const Home: React.FC = () => {
   const [styles, setStyles] = useState<string[]>([]);
@@ -134,6 +135,46 @@ const Home: React.FC = () => {
     setVisibleStartIndex((prev) => Math.min(prev + 1, resumes.length + styles.length - 4));
   };
 
+  const handleImproveContent = async () => {
+    if (!selectedResume || !selectedResume.work_experience?.content) return;
+  
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${API_URL}/suggestions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: selectedResume.work_experience.content }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch suggestions");
+      }
+  
+      const data = await response.json();
+      setSelectedResume((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          work_experience: {
+            ...prev.work_experience,
+            content: data.suggestions,
+          },
+          title: prev.title || "",
+          style: prev.style || "",
+        };
+      });
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error("Unknown error");
+      console.error("Error improving content:", err.message);
+      alert("Failed to improve the content. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="container mt-5">
       <h1>Your Resumes</h1>
@@ -245,6 +286,7 @@ const Home: React.FC = () => {
                   }
                 ></textarea>
               </div>
+
               <div className="form-group mt-3">
                 <label htmlFor="experience">Work Experience</label>
                 <textarea
@@ -262,6 +304,13 @@ const Home: React.FC = () => {
                     })
                   }
                 ></textarea>
+                <button
+                  className="btn btn-warning mt-2"
+                  onClick={handleImproveContent}
+                  disabled={isLoading || !selectedResume?.work_experience?.content}
+                >
+                  Improve with AI
+                </button>
               </div>
 
               <div className="mt-4">
