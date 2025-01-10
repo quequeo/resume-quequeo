@@ -14,7 +14,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }, [user, navigate]);
 
@@ -24,7 +24,7 @@ const Login = () => {
       const response = await loginUser(credentials);
       if (response.user && response.token) {
         login(response.user, response.token);
-        navigate("/dashboard");
+        navigate("/");
       } else {
         setError("Invalid user or token data");
       }
