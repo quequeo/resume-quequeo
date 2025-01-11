@@ -29,7 +29,6 @@ const Home: React.FC = () => {
           
           if (fetchedResumes.length > 0) {
             setSelectedResume(fetchedResumes[0])
-            console.log(fetchedResumes[0])
           } else {
             const exampleResume = {
               title: "Example Resume",
