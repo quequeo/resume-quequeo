@@ -285,6 +285,14 @@ const Home: React.FC = () => {
                     })
                   }
                 ></textarea>
+                <button
+                  type="button"
+                  className="btn btn-warning mt-2"
+                  onClick={handleImproveContent}
+                  disabled={isLoading || !selectedResume?.personal_information?.content}
+                >
+                  Improve Personal Information with AI
+                </button>
               </div>
 
               <div className="form-group mt-3">
@@ -310,7 +318,7 @@ const Home: React.FC = () => {
                   onClick={handleImproveContent}
                   disabled={isLoading || !selectedResume?.work_experience?.content}
                 >
-                  Improve with AI
+                  Improve Work Experience with AI
                 </button>
               </div>
 
