@@ -134,7 +134,8 @@ const Home: React.FC = () => {
     setVisibleStartIndex((prev) => Math.min(prev + 1, resumes.length + styles.length - 4));
   };
 
-  const handleImproveContent = async () => {
+  const handleImproveContent = async (event) => {
+    event.preventDefault();
     if (!selectedResume || !selectedResume.work_experience?.content) return;
   
     try {
@@ -304,6 +305,7 @@ const Home: React.FC = () => {
                   }
                 ></textarea>
                 <button
+                  type="button"
                   className="btn btn-warning mt-2"
                   onClick={handleImproveContent}
                   disabled={isLoading || !selectedResume?.work_experience?.content}
